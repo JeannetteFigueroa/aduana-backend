@@ -1,0 +1,17 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: USUARIO-SERVICE
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/usuarios_db/usuarios_db??createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
