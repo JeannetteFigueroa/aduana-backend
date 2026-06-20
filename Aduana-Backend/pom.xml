@@ -1,0 +1,35 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.aduanas</groupId>
+    <artifactId>aduana-backend</artifactId>
+
+    <version>1.0.0</version>
+
+    <packaging>pom</packaging>
+
+    <modules>
+
+        <module>ms-alertas</module>
+
+        <module>ms-auth</module>
+
+        <module>ms-declaraciones</module>
+
+        <module>ms-permisos</module>
+
+        <module>ms-reportes</module>
+
+        <module>ms-usuarios</module>
+
+        <module>ms-validaciones</module>
+
+        <module>ms-viajeros</module>
+
+        <module>api-gateway</module>
+
+        <module>eureka-server</module>
+
+    </modules>
+
+</project>
