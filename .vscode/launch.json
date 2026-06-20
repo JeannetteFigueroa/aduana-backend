@@ -8,7 +8,8 @@
             "mainClass": "com.aduanas.msauth.MsauthApplication",
             "projectName": "msauth",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=64133 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=msauth"
         },
         {
             "type": "java",
@@ -28,6 +29,27 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.aduanas.msusuarios.MsusuariosApplication",
             "projectName": "msusuarios",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=56938 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=msusuarios"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-MsviajerosApplication<msviajeros>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.aduanas.msviajeros.MsviajerosApplication",
+            "projectName": "msviajeros",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ApigatewayApplication<apigateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.aduanas.apigateway.ApigatewayApplication",
+            "projectName": "apigateway",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
