@@ -1,3 +1,8 @@
 spring:
   application:
-    name: mspermisos
+    name: ms-permisos
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

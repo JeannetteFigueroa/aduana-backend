@@ -3,10 +3,10 @@ server:
 
 spring:
   application:
-    name: USUARIO-SERVICE
+    name: ms-usuarios
 
   datasource:
-    url: jdbc:mysql://localhost:3307/usuarios_db/usuarios_db??createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3307/usuarios_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
     username: root
     password:
 

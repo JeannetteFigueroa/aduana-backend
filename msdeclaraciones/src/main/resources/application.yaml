@@ -1,3 +1,8 @@
 spring:
   application:
-    name: msdeclaraciones
+    name: ms-declaraciones
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

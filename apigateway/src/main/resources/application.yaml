@@ -1,3 +1,6 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: apigateway
@@ -13,6 +16,7 @@ spring:
           uri: lb://ms-viajeros
           predicates:
             - Path=/api/viajeros/**
-
-server:
-  port: 8081
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true

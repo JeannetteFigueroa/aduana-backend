@@ -1,3 +1,20 @@
+server:
+  port: 8087
+
 spring:
   application:
     name: ms-alertas
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/db_alertas?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
