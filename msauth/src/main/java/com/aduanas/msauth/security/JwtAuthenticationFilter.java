@@ -24,69 +24,69 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter
-        extends OncePerRequestFilter {
+                extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+        private final JwtService jwtService;
 
-    private final CustomUserDetailsService userDetailsService;
+        private final CustomUserDetailsService userDetailsService;
 
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain)
-            throws ServletException, IOException {
+        @Override
+        protected void doFilterInternal(
+                        HttpServletRequest request,
+                        HttpServletResponse response,
+                        FilterChain filterChain)
+                        throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+                final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null ||
-                !authHeader.startsWith("Bearer ")) {
+                if (authHeader == null ||
+                                !authHeader.startsWith("Bearer ")) {
 
-            filterChain.doFilter(request, response);
-            return;
+                        filterChain.doFilter(request, response);
+                        return;
+                }
+
+                String jwt = authHeader.substring(7);
+
+                String email = null;
+
+                try {
+
+                        email = jwtService.extractUsername(jwt);
+
+                } catch (Exception ex) {
+
+                        filterChain.doFilter(request, response);
+                        return;
+                }
+
+                if (email != null &&
+                                SecurityContextHolder
+                                                .getContext()
+                                                .getAuthentication() == null) {
+
+                        UserDetails userDetails = userDetailsService
+                                        .loadUserByUsername(email);
+
+                        if (jwtService.isTokenValid(
+                                        jwt,
+                                        userDetails.getUsername())) {
+
+                                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                                                userDetails,
+                                                null,
+                                                userDetails.getAuthorities());
+
+                                authToken.setDetails(
+                                                new WebAuthenticationDetailsSource()
+                                                                .buildDetails(request));
+
+                                SecurityContextHolder
+                                                .getContext()
+                                                .setAuthentication(authToken);
+                        }
+                }
+
+                filterChain.doFilter(request, response);
         }
-
-        String jwt = authHeader.substring(7);
-
-        String email = null;
-
-        try {
-
-            email = jwtService.extractUsername(jwt);
-
-        } catch (Exception ex) {
-
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (email != null &&
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication() == null) {
-
-            UserDetails userDetails = userDetailsService
-                    .loadUserByUsername(email);
-
-            if (jwtService.isTokenValid(
-                    jwt,
-                    userDetails.getUsername())) {
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
-
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authToken);
-            }
-        }
-
-        filterChain.doFilter(request, response);
-    }
 }

@@ -21,6 +21,7 @@ public class RegisterRequestDTO {
     @NotBlank
     private String email;
 
-    @Size(min = 8)
+    @NotBlank
+    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
     private String password;
 }

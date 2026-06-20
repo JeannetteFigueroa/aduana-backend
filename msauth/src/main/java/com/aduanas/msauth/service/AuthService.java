@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -57,10 +59,12 @@ public class AuthService {
                                 .build();
 
                 usuarioRepository.save(usuario);
+
                 registrarAuditoria(
                                 usuario,
                                 "REGISTER",
-                                "EXITOSO");
+                                "EXITOSO",
+                                "127.0.0.1");
 
                 String token = jwtService.generateToken(
                                 usuario);
@@ -72,7 +76,9 @@ public class AuthService {
                                 .build();
         }
 
-        public AuthResponseDTO login(LoginRequestDTO request) {
+        public AuthResponseDTO login(
+                        LoginRequestDTO request,
+                        String ip) {
 
                 Usuario usuario = usuarioRepository
                                 .findByEmail(request.getEmail())
@@ -91,7 +97,8 @@ public class AuthService {
                         registrarAuditoria(
                                         usuario,
                                         "LOGIN",
-                                        "FALLIDO");
+                                        "FALLIDO",
+                                        ip);
 
                         throw new RuntimeException(
                                         "Credenciales inválidas");
@@ -103,7 +110,8 @@ public class AuthService {
                 registrarAuditoria(
                                 usuario,
                                 "LOGIN",
-                                "EXITOSO");
+                                "EXITOSO",
+                                ip);
 
                 return AuthResponseDTO.builder()
                                 .token(token)
@@ -130,7 +138,8 @@ public class AuthService {
         private void registrarAuditoria(
                         Usuario usuario,
                         String accion,
-                        String resultado) {
+                        String resultado,
+                        String ip) {
 
                 AuditoriaAcceso auditoria = new AuditoriaAcceso();
 
@@ -143,8 +152,7 @@ public class AuthService {
                 auditoria.setFecha(
                                 java.time.LocalDateTime.now());
 
-                auditoria.setIpOrigen(
-                                "127.0.0.1");
+                auditoria.setIpOrigen(ip);
 
                 auditoriaRepository.save(auditoria);
 
@@ -175,8 +183,62 @@ public class AuthService {
                 registrarAuditoria(
                                 usuario,
                                 "CHANGE_PASSWORD",
-                                "EXITOSO");
+                                "EXITOSO",
+                                "127.0.0.1");
+        }
 
-                String token = jwtService.generateToken(usuario);
+        public List<UsuarioResponseDTO> getAllUsers() {
+
+                return usuarioRepository.findAll()
+                                .stream()
+                                .map(usuario -> UsuarioResponseDTO.builder()
+                                                .id(usuario.getId())
+                                                .rut(usuario.getRut())
+                                                .nombres(usuario.getNombres())
+                                                .apellidos(usuario.getApellidos())
+                                                .email(usuario.getEmail())
+                                                .rol(usuario.getRol().getNombre())
+                                                .activo(usuario.getActivo())
+                                                .build())
+                                .toList();
+        }
+
+        public UsuarioResponseDTO getUserById(Long id) {
+
+                Usuario usuario = usuarioRepository
+                                .findById(id)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                return UsuarioResponseDTO.builder()
+                                .id(usuario.getId())
+                                .rut(usuario.getRut())
+                                .nombres(usuario.getNombres())
+                                .apellidos(usuario.getApellidos())
+                                .email(usuario.getEmail())
+                                .rol(usuario.getRol().getNombre())
+                                .activo(usuario.getActivo())
+                                .build();
+        }
+
+        public void desactivarUsuario(Long id) {
+
+                Usuario usuario = usuarioRepository
+                                .findById(id)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                usuario.setActivo(false);
+
+                usuarioRepository.save(usuario);
+        }
+
+        public void activarUsuario(Long id) {
+
+                Usuario usuario = usuarioRepository
+                                .findById(id)
+                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+                usuario.setActivo(true);
+
+                usuarioRepository.save(usuario);
         }
 }

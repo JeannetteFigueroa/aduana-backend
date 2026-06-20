@@ -33,10 +33,9 @@ public class JwtService {
 
                 .subject(usuario.getEmail())
 
-                .claim(
-                        "rol",
-                        usuario.getRol()
-                                .getNombre())
+                .claim("rol", usuario.getRol().getNombre())
+                .claim("id", usuario.getId())
+                .claim("rut", usuario.getRut())
 
                 .issuedAt(new Date())
 
