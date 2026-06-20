@@ -1,0 +1,31 @@
+server:
+  port: 8081
+
+jwt:
+  secret: 12345678901234567890123456789012345678901234567890
+  expiration: 10000
+
+spring:
+  application:
+    name: ms-auth
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/db_auth?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

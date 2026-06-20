@@ -1,3 +1,18 @@
 spring:
   application:
     name: apigateway
+  cloud:
+    gateway:
+      routes:
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/auth/**
+
+        - id: ms-viajeros
+          uri: lb://ms-viajeros
+          predicates:
+            - Path=/api/viajeros/**
+
+server:
+  port: 8081
