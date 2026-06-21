@@ -1,11 +1,11 @@
 # Paso 1: Compilar la aplicación usando Maven y Java 17
-FROM maven:3.8.4-openjdk-17 AS build
+FROM maven:3.8.6-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Paso 2: Crear la imagen ligera para correr el microservicio
-FROM openjdk:17-jdk-slim
+# Paso 2: Crear la imagen ligera para correr el microservicio con Java 17 activo
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
