@@ -137,6 +137,7 @@ public class AuthService {
                                 .rol(usuario.getRol().getNombre())
                                 .nombres(usuario.getNombres())
                                 .apellidos(usuario.getApellidos())
+                                .rut(usuario.getRut())
                                 .build();
         }
 

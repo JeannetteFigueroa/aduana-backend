@@ -14,4 +14,6 @@ public class UserProfileDTO {
     private String nombres;
 
     private String apellidos;
+
+    private String rut;
 }
