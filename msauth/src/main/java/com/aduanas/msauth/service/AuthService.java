@@ -1,19 +1,24 @@
 package com.aduanas.msauth.service;
 
-import com.aduanas.msauth.dto.*;
-import com.aduanas.msauth.model.*;
-
-import com.aduanas.msauth.repository.*;
-
+import com.aduanas.msauth.dto.AuthResponseDTO;
+import com.aduanas.msauth.dto.ChangePasswordDTO;
+import com.aduanas.msauth.dto.LoginRequestDTO;
+import com.aduanas.msauth.dto.RegisterRequestDTO;
+import com.aduanas.msauth.dto.UserProfileDTO;
+import com.aduanas.msauth.exception.*;
+import com.aduanas.msauth.model.AuditoriaAcceso;
+import com.aduanas.msauth.model.Rol;
+import com.aduanas.msauth.model.Usuario;
+import com.aduanas.msauth.repository.AuditoriaRepository;
+import com.aduanas.msauth.repository.RolRepository;
+import com.aduanas.msauth.repository.UsuarioRepository;
 import com.aduanas.msauth.security.JwtService;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,25 +31,27 @@ public class AuthService {
         private final AuditoriaRepository auditoriaRepository;
 
         public AuthResponseDTO register(
-                        RegisterRequestDTO request) {
+                        RegisterRequestDTO request,
+                        String ip) {
 
                 if (usuarioRepository.existsByEmail(
                                 request.getEmail())) {
 
-                        throw new RuntimeException(
+                        throw new EmailDuplicadoException(
                                         "Email ya registrado");
                 }
 
                 if (usuarioRepository.existsByRut(
                                 request.getRut())) {
 
-                        throw new RuntimeException(
+                        throw new RutDuplicadoException(
                                         "Rut ya registrado");
                 }
 
                 Rol rol = rolRepository
                                 .findByNombre("VIAJERO")
-                                .orElseThrow();
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Rol por defecto VIAJERO no existe"));
 
                 Usuario usuario = Usuario.builder()
                                 .rut(request.getRut())
@@ -64,7 +71,7 @@ public class AuthService {
                                 usuario,
                                 "REGISTER",
                                 "EXITOSO",
-                                "127.0.0.1");
+                                ip);
 
                 String token = jwtService.generateToken(
                                 usuario);
@@ -80,27 +87,24 @@ public class AuthService {
                         LoginRequestDTO request,
                         String ip) {
 
-                Usuario usuario = usuarioRepository
-                                .findByEmail(request.getEmail())
-                                .orElse(null);
+                Optional<Usuario> usuarioOpt = usuarioRepository
+                                .findByEmail(request.getEmail());
 
-                if (usuario == null) {
+                Usuario usuario = usuarioOpt.orElse(null);
 
-                        throw new RuntimeException(
-                                        "Usuario no encontrado");
-                }
-
-                if (!passwordEncoder.matches(
+                if (usuario == null || !passwordEncoder.matches(
                                 request.getPassword(),
                                 usuario.getPassword())) {
 
-                        registrarAuditoria(
-                                        usuario,
-                                        "LOGIN",
-                                        "FALLIDO",
-                                        ip);
+                        if (usuario != null) {
+                                registrarAuditoria(
+                                                usuario,
+                                                "LOGIN",
+                                                "FALLIDO",
+                                                ip);
+                        }
 
-                        throw new RuntimeException(
+                        throw new CredencialesInvalidasException(
                                         "Credenciales inválidas");
                 }
 
@@ -125,7 +129,8 @@ public class AuthService {
 
                 Usuario usuario = usuarioRepository
                                 .findByEmail(email)
-                                .orElseThrow();
+                                .orElseThrow(() -> new UsuarioNoEncontradoException(
+                                                "Usuario no encontrado"));
 
                 return UserProfileDTO.builder()
                                 .email(usuario.getEmail())
@@ -133,6 +138,37 @@ public class AuthService {
                                 .nombres(usuario.getNombres())
                                 .apellidos(usuario.getApellidos())
                                 .build();
+        }
+
+        public void changePassword(
+                        String email,
+                        ChangePasswordDTO request,
+                        String ip) {
+
+                Usuario usuario = usuarioRepository
+                                .findByEmail(email)
+                                .orElseThrow(() -> new UsuarioNoEncontradoException(
+                                                "Usuario no encontrado"));
+
+                if (!passwordEncoder.matches(
+                                request.getOldPassword(),
+                                usuario.getPassword())) {
+
+                        throw new ContrasenaIncorrectaException(
+                                        "Contraseña incorrecta");
+                }
+
+                usuario.setPassword(
+                                passwordEncoder.encode(
+                                                request.getNewPassword()));
+
+                usuarioRepository.save(usuario);
+
+                registrarAuditoria(
+                                usuario,
+                                "CHANGE_PASSWORD",
+                                "EXITOSO",
+                                ip);
         }
 
         private void registrarAuditoria(
@@ -157,88 +193,4 @@ public class AuthService {
                 auditoriaRepository.save(auditoria);
 
         }
-
-        public void changePassword(
-                        String email,
-                        ChangePasswordDTO request) {
-
-                Usuario usuario = usuarioRepository
-                                .findByEmail(email)
-                                .orElseThrow();
-
-                if (!passwordEncoder.matches(
-                                request.getOldPassword(),
-                                usuario.getPassword())) {
-
-                        throw new RuntimeException(
-                                        "Contraseña incorrecta");
-                }
-
-                usuario.setPassword(
-                                passwordEncoder.encode(
-                                                request.getNewPassword()));
-
-                usuarioRepository.save(usuario);
-
-                registrarAuditoria(
-                                usuario,
-                                "CHANGE_PASSWORD",
-                                "EXITOSO",
-                                "127.0.0.1");
-        }
-/*              METODOS PARA MSUSUARIOS!!!!
-        public List<UsuarioResponseDTO> getAllUsers() {
-
-                return usuarioRepository.findAll()
-                                .stream()
-                                .map(usuario -> UsuarioResponseDTO.builder()
-                                                .id(usuario.getId())
-                                                .rut(usuario.getRut())
-                                                .nombres(usuario.getNombres())
-                                                .apellidos(usuario.getApellidos())
-                                                .email(usuario.getEmail())
-                                                .rol(usuario.getRol().getNombre())
-                                                .activo(usuario.getActivo())
-                                                .build())
-                                .toList();
-        }
-
-        public UsuarioResponseDTO getUserById(Long id) {
-
-                Usuario usuario = usuarioRepository
-                                .findById(id)
-                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-                return UsuarioResponseDTO.builder()
-                                .id(usuario.getId())
-                                .rut(usuario.getRut())
-                                .nombres(usuario.getNombres())
-                                .apellidos(usuario.getApellidos())
-                                .email(usuario.getEmail())
-                                .rol(usuario.getRol().getNombre())
-                                .activo(usuario.getActivo())
-                                .build();
-        }
-
-        public void desactivarUsuario(Long id) {
-
-                Usuario usuario = usuarioRepository
-                                .findById(id)
-                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-                usuario.setActivo(false);
-
-                usuarioRepository.save(usuario);
-        }
-
-        public void activarUsuario(Long id) {
-
-                Usuario usuario = usuarioRepository
-                                .findById(id)
-                                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-                usuario.setActivo(true);
-
-                usuarioRepository.save(usuario);
-        }*/
 }

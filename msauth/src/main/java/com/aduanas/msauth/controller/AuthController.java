@@ -1,27 +1,25 @@
 package com.aduanas.msauth.controller;
 
-import com.aduanas.msauth.dto.*;
-
+import com.aduanas.msauth.dto.AuthResponseDTO;
+import com.aduanas.msauth.dto.ChangePasswordDTO;
+import com.aduanas.msauth.dto.LoginRequestDTO;
+import com.aduanas.msauth.dto.RegisterRequestDTO;
+import com.aduanas.msauth.dto.UserProfileDTO;
 import com.aduanas.msauth.service.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import java.security.Principal;
-
-import lombok.RequiredArgsConstructor;
-
-import jakarta.servlet.http.HttpServletRequest;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-
-import java.util.List;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,16 +29,21 @@ public class AuthController {
         private final AuthService authService;
 
         @PostMapping("/register")
-        public AuthResponseDTO register(
-                        @Valid @RequestBody RegisterRequestDTO request) {
+        public ResponseEntity<AuthResponseDTO> register(
+                        @Valid @RequestBody RegisterRequestDTO request,
+                        HttpServletRequest httpRequest) {
 
-                return authService.register(request); /* cambiar por httpstatus */
+                String ip = httpRequest.getRemoteAddr();
+
+                AuthResponseDTO response = authService.register(request, ip);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
 
         @PostMapping("/login")
         public AuthResponseDTO login(
                         @Valid @RequestBody LoginRequestDTO request,
-                        jakarta.servlet.http.HttpServletRequest httpRequest) {
+                        HttpServletRequest httpRequest) {
 
                 String ip = httpRequest.getRemoteAddr();
 
@@ -72,94 +75,44 @@ public class AuthController {
 
         @PostMapping("/change-password")
         public ResponseEntity<?> changePassword(
-                        @RequestBody ChangePasswordDTO request) {
+                        @RequestBody ChangePasswordDTO request,
+                        HttpServletRequest httpRequest) {
 
                 Authentication auth = SecurityContextHolder
                                 .getContext()
                                 .getAuthentication();
 
+                String ip = httpRequest.getRemoteAddr();
+
                 authService.changePassword(
                                 auth.getName(),
-                                request);
+                                request,
+                                ip);
 
                 return ResponseEntity.ok(
                                 "Contraseña actualizada");
         }
 
-        /*      MIGRAN A OTRO MICROSERVICIO
         @GetMapping("/protected")
-        public String protectedEndpoint() {
+        public ResponseEntity<?> protectedEndpoint() {
 
-                return "JWT válido";
+                return ResponseEntity.ok(
+                                "JWT válido");
         }
 
         @GetMapping("/admin")
         @PreAuthorize("hasRole('ADMIN')")
-        public String adminOnly() {
+        public ResponseEntity<?> adminOnly() {
 
-                return "Acceso autorizado para ADMIN";
+                return ResponseEntity.ok(
+                                "Acceso autorizado para ADMIN");
         }
 
         @GetMapping("/funcionario")
         @PreAuthorize("hasAnyRole('ADMIN','FUNCIONARIO')")
-        public String funcionarioOnly() {
+        public ResponseEntity<?> funcionarioOnly() {
 
-                return "Acceso autorizado para funcionario";
+                return ResponseEntity.ok(
+                                "Acceso autorizado para funcionario");
         }
-
-        @GetMapping("/admin/test")
-        @PreAuthorize("hasRole('ADMIN')")
-        public String adminTest() {
-
-                return "Acceso ADMIN correcto";
-        }
-
-        @GetMapping("/funcionario/test")
-        @PreAuthorize("hasAnyRole('ADMIN','FUNCIONARIO')")
-        public String funcionarioTest() {
-
-                return "Acceso FUNCIONARIO correcto";
-        }
-
-        @GetMapping("/viajero/test")
-        @PreAuthorize("hasAnyRole('ADMIN','FUNCIONARIO','VIAJERO')")
-        public String viajeroTest() {
-
-                return "Acceso VIAJERO correcto";
-        }
-*/
-/* 
-        METODOS ADMINISTRATIVOS PARA MSUSUARIOS!!
-        @GetMapping("/users")
-        public List<UsuarioResponseDTO> getAllUsers() {
-
-                return authService.getAllUsers();
-        }
-
-        @GetMapping("/users/{id}")
-        public UsuarioResponseDTO getUserById(
-                        @PathVariable Long id) {
-
-                return authService.getUserById(id);
-        }
-
-        @PutMapping("/users/{id}/disable")
-        public ResponseEntity<?> disableUser(
-                        @PathVariable Long id) {
-
-                authService.desactivarUsuario(id);
-
-                return ResponseEntity.ok("Usuario desactivado");
-        }
-
-        @PutMapping("/users/{id}/enable")
-        public ResponseEntity<?> enableUser(
-                        @PathVariable Long id) {
-
-                authService.activarUsuario(id);
-
-                return ResponseEntity.ok("Usuario activado");
-        }
-*/
-        
 }
