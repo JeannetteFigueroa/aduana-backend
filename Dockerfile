@@ -3,8 +3,8 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 
-# Truco radical: Compilamos solo producción y re-empaquetamos saltándonos el ciclo tradicional
-RUN mvn clean compile spring-boot:repackage -pl eureka,apigateway,msauth,msusuarios,msviajeros -am -DskipTests=true -Dmaven.test.skip=true
+# Usamos package normal, pero apagamos el compilador de pruebas de raíz para evitar el error del plugin
+RUN mvn clean package -pl eureka,apigateway,msauth,msusuarios,msviajeros -am -DskipTests=true -Dmaven.test.skip=true
 
 # Paso 2: Crear el entorno de ejecución único usando Java 21
 FROM eclipse-temurin:21-jre-alpine
