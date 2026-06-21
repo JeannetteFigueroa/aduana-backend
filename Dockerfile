@@ -1,22 +1,24 @@
-# Paso 1: Compilar TODO el monorepo junto usando Java 21
+# Paso 1: Compilar SOLO los microservicios listos usando Java 21
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-# Forzamos a Maven a compilar solo código de producción ignorando test-compile
-RUN mvn clean package -DskipTests -Dmaven.test.skip=true -DcompilerArgument="-Xlint:none"
+# Le decimos a Maven que compile estrictamente Eureka, Gateway, Auth, Usuarios y Viajeros
+RUN mvn clean package -pl eureka,apigateway,msauth,msusuarios,msviajeros -am -DskipTests=true
 
 # Paso 2: Crear el entorno de ejecución único usando Java 21
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Copiar todos los archivos compilados en el paso anterior
+# Instalar bash en la imagen ligera para correr el script
+RUN apk add --no-cache bash
+
+# Copiar todos los archivos compilados
 COPY --from=build /app/ /app/
 
-# Darle permisos de ejecución al script de arranque
+# Asegurar permisos de ejecución
 RUN chmod +x /app/run-all.sh
 
-# Exponer el puerto del API Gateway
+# Exponer el puerto del API Gateway (Conexión pública para Vercel)
 EXPOSE 8080
 
-# Ejecutar el script que levanta todo en simultáneo
-ENTRYPOINT ["/app/run-all.sh"]
+ENTRYPOINT ["/bin/bash", "/app/run-all.sh"]
