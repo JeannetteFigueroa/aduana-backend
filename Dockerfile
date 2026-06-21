@@ -1,20 +1,20 @@
-# Paso 1: Compilar TODO el monorepo junto
-FROM maven:3.8.6-eclipse-temurin-17 AS build
+# Paso 1: Compilar TODO el monorepo junto usando Java 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Paso 2: Crear el entorno de ejecución único
-FROM eclipse-temurin:17-jre-alpine
+# Paso 2: Crear el entorno de ejecución único usando Java 21
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-# Copiar TODOS los archivos compilados desde el paso anterior
+# Copiar todos los archivos compilados en el paso anterior
 COPY --from=build /app/ /app/
 
 # Darle permisos de ejecución al script de arranque
 RUN chmod +x /app/run-all.sh
 
-# Exponer el puerto del API Gateway (Render redirigirá el tráfico aquí)
+# Exponer el puerto del API Gateway
 EXPOSE 8080
 
 # Ejecutar el script que levanta todo en simultáneo
