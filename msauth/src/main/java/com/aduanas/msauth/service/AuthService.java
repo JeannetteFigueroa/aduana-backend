@@ -186,7 +186,7 @@ public class AuthService {
                                 "EXITOSO",
                                 "127.0.0.1");
         }
-
+/*              METODOS PARA MSUSUARIOS!!!!
         public List<UsuarioResponseDTO> getAllUsers() {
 
                 return usuarioRepository.findAll()
@@ -240,5 +240,5 @@ public class AuthService {
                 usuario.setActivo(true);
 
                 usuarioRepository.save(usuario);
-        }
+        }*/
 }

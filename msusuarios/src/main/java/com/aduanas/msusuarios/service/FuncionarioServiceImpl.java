@@ -22,185 +22,196 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FuncionarioServiceImpl implements FuncionarioService {
 
-    private final FuncionarioRepository repository;
+        private final FuncionarioRepository repository;
 
-    private final List<String> ROLES
-            = List.of(
-                    "ADMIN",
-                    "SUPERVISOR",
-                    "FISCALIZADOR",
-                    "OPERADOR");
+        private final List<String> ROLES = List.of(
+                        "ADMIN",
+                        "SUPERVISOR",
+                        "FISCALIZADOR",
+                        "OPERADOR");
 
-    // Método para crear funcionario
-    @Override
-    public FuncionarioResponseDTO crearFuncionario(
-            FuncionarioRequestDTO request) {
+        // Método para crear funcionario
+        @Override
+        public FuncionarioResponseDTO crearFuncionario(
+                        FuncionarioRequestDTO request) {
 
-        if (repository.existsByRut(
-                request.getRut())) {
+                if (repository.existsByRut(
+                                request.getRut())) {
 
-            throw new RutDuplicadoException(
-                    "Rut ya registrado");
+                        throw new RutDuplicadoException(
+                                        "Rut ya registrado");
+                }
+
+                if (repository.existsByCorreoInstitucional(
+                                request.getCorreoInstitucional())) {
+
+                        throw new CorreoDuplicadoException(
+                                        "Correo ya registrado");
+                }
+
+                if (!request.getCorreoInstitucional()
+                                .endsWith("@aduana.cl")) {
+
+                        throw new CorreoInstitucionalException(
+                                        "Debe usar correo institucional");
+                }
+
+                if (!ROLES.contains(
+                                request.getRol())) {
+
+                        throw new RolInvalidoException(
+                                        "Rol inválido");
+                }
+
+                Funcionario funcionario = Funcionario.builder()
+                                .rut(request.getRut())
+                                .nombres(request.getNombres())
+                                .apellidos(request.getApellidos())
+                                .correoInstitucional(
+                                                request.getCorreoInstitucional())
+                                .rol(request.getRol())
+                                .estado("ACTIVO")
+                                .fechaCreacion(
+                                                LocalDateTime.now())
+                                .build();
+
+                repository.save(funcionario);
+
+                return mapear(funcionario);
         }
 
-        if (repository.existsByCorreoInstitucional(
-                request.getCorreoInstitucional())) {
+        // Método para buscar por id
+        @Override
+        public FuncionarioResponseDTO obtenerPorId(
+                        Long id) {
 
-            throw new CorreoDuplicadoException(
-                    "Correo ya registrado");
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new FuncionarioNoEncontradoException(
+                                                "Funcionario no encontrado"));
+
+                return mapear(funcionario);
         }
 
-        if (!request.getCorreoInstitucional()
-                .endsWith("@aduana.cl")) {
+        // Metodo para desactivar estado
+        @Override
+        public void desactivarFuncionario(
+                        Long id) {
 
-            throw new CorreoInstitucionalException(
-                    "Debe usar correo institucional");
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new FuncionarioNoEncontradoException(
+                                                "Funcionario no encontrado"));
+
+                funcionario.setEstado(
+                                "INACTIVO");
+
+                repository.save(funcionario);
         }
 
-        if (!ROLES.contains(
-                request.getRol())) {
+        @Override
+        public void activarFuncionario(Long id) {
 
-            throw new RolInvalidoException(
-                    "Rol inválido");
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new FuncionarioNoEncontradoException(
+                                                "Funcionario no encontrado"));
+
+                funcionario.setEstado(
+                                "ACTIVO");
+
+                repository.save(funcionario);
         }
 
-        Funcionario funcionario
-                = Funcionario.builder()
-                        .rut(request.getRut())
-                        .nombres(request.getNombres())
-                        .apellidos(request.getApellidos())
-                        .correoInstitucional(
-                                request.getCorreoInstitucional())
-                        .rol(request.getRol())
-                        .estado("ACTIVO")
-                        .fechaCreacion(
-                                LocalDateTime.now())
-                        .build();
+        @Override
+        public void eliminarFuncionario(Long id) {
 
-        repository.save(funcionario);
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new FuncionarioNoEncontradoException(
+                                                "Funcionario no encontrado"));
 
-        return mapear(funcionario);
-    }
-
-    // Método para buscar por id
-    @Override
-    public FuncionarioResponseDTO obtenerPorId(
-            Long id) {
-
-        Funcionario funcionario
-                = repository.findById(id)
-                        .orElseThrow(()
-                                -> new FuncionarioNoEncontradoException(
-                                "Funcionario no encontrado"));
-
-        return mapear(funcionario);
-    }
-
-    //Metodo para desactivar estado
-    @Override
-    public void desactivarFuncionario(
-            Long id) {
-
-        Funcionario funcionario
-                = repository.findById(id)
-                        .orElseThrow(()
-                                -> new FuncionarioNoEncontradoException(
-                                "Funcionario no encontrado"));
-
-        funcionario.setEstado(
-                "INACTIVO");
-
-        repository.save(funcionario);
-    }
-
-    private FuncionarioResponseDTO mapear(
-            Funcionario funcionario) {
-
-        return FuncionarioResponseDTO.builder()
-                .id(funcionario.getId())
-                .rut(funcionario.getRut())
-                .nombres(funcionario.getNombres())
-                .apellidos(funcionario.getApellidos())
-                .correoInstitucional(
-                        funcionario.getCorreoInstitucional())
-                .rol(funcionario.getRol())
-                .estado(funcionario.getEstado())
-                .build();
-    }
-
-    @Override
-    public List<FuncionarioResponseDTO> obtenerTodos() {
-
-        return repository.findAll()
-                .stream()
-                .map(this::mapear)
-                .toList();
-    }
-
-    @Override
-    public FuncionarioResponseDTO obtenerPorRut(
-            String rut) {
-
-        Funcionario funcionario
-                = repository.findByRut(rut)
-                        .orElseThrow(()
-                                -> new RuntimeException(
-                                "Funcionario no encontrado"));
-
-        return mapear(funcionario);
-    }
-
-    @Override
-    public FuncionarioResponseDTO actualizarFuncionario(
-            Long id,
-            FuncionarioRequestDTO request) {
-
-        Funcionario funcionario
-                = repository.findById(id)
-                        .orElseThrow(()
-                                -> new RuntimeException(
-                                "Funcionario no encontrado"));
-
-        funcionario.setNombres(
-                request.getNombres());
-
-        funcionario.setApellidos(
-                request.getApellidos());
-
-        funcionario.setCorreoInstitucional(
-                request.getCorreoInstitucional());
-
-        funcionario.setFechaActualizacion(
-                LocalDateTime.now());
-
-        repository.save(funcionario);
-
-        return mapear(funcionario);
-    }
-
-    @Override
-    public FuncionarioResponseDTO cambiarRol(
-            Long id,
-            CambioRolDTO request) {
-
-        Funcionario funcionario
-                = repository.findById(id)
-                        .orElseThrow(()
-                                -> new RuntimeException(
-                                "Funcionario no encontrado"));
-
-        if (!ROLES.contains(
-                request.getRol())) {
-
-            throw new RuntimeException(
-                    "Rol inválido");
+                repository.delete(funcionario);
         }
 
-        funcionario.setRol(
-                request.getRol());
+        private FuncionarioResponseDTO mapear(
+                        Funcionario funcionario) {
 
-        repository.save(funcionario);
+                return FuncionarioResponseDTO.builder()
+                                .id(funcionario.getId())
+                                .rut(funcionario.getRut())
+                                .nombres(funcionario.getNombres())
+                                .apellidos(funcionario.getApellidos())
+                                .correoInstitucional(
+                                                funcionario.getCorreoInstitucional())
+                                .rol(funcionario.getRol())
+                                .estado(funcionario.getEstado())
+                                .build();
+        }
 
-        return mapear(funcionario);
-    }
+        @Override
+        public List<FuncionarioResponseDTO> obtenerTodos() {
+
+                return repository.findAll()
+                                .stream()
+                                .map(this::mapear)
+                                .toList();
+        }
+
+        @Override
+        public FuncionarioResponseDTO obtenerPorRut(
+                        String rut) {
+
+                Funcionario funcionario = repository.findByRut(rut)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Funcionario no encontrado"));
+
+                return mapear(funcionario);
+        }
+
+        @Override
+        public FuncionarioResponseDTO actualizarFuncionario(
+                        Long id,
+                        FuncionarioRequestDTO request) {
+
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Funcionario no encontrado"));
+
+                funcionario.setNombres(
+                                request.getNombres());
+
+                funcionario.setApellidos(
+                                request.getApellidos());
+
+                funcionario.setCorreoInstitucional(
+                                request.getCorreoInstitucional());
+
+                funcionario.setFechaActualizacion(
+                                LocalDateTime.now());
+
+                repository.save(funcionario);
+
+                return mapear(funcionario);
+        }
+
+        @Override
+        public FuncionarioResponseDTO cambiarRol(
+                        Long id,
+                        CambioRolDTO request) {
+
+                Funcionario funcionario = repository.findById(id)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Funcionario no encontrado"));
+
+                if (!ROLES.contains(
+                                request.getRol())) {
+
+                        throw new RuntimeException(
+                                        "Rol inválido");
+                }
+
+                funcionario.setRol(
+                                request.getRol());
+
+                repository.save(funcionario);
+
+                return mapear(funcionario);
+        }
 }

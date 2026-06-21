@@ -8,22 +8,26 @@ import com.aduanas.msusuarios.dto.FuncionarioResponseDTO;
 
 public interface FuncionarioService {
 
-    FuncionarioResponseDTO crearFuncionario(
-            FuncionarioRequestDTO request);
+        FuncionarioResponseDTO crearFuncionario(
+                        FuncionarioRequestDTO request);
 
-    List<FuncionarioResponseDTO> obtenerTodos();
+        List<FuncionarioResponseDTO> obtenerTodos();
 
-    FuncionarioResponseDTO obtenerPorId(Long id);
+        FuncionarioResponseDTO obtenerPorId(Long id);
 
-    FuncionarioResponseDTO obtenerPorRut(String rut);
+        FuncionarioResponseDTO obtenerPorRut(String rut);
 
-    FuncionarioResponseDTO actualizarFuncionario(
-            Long id,
-            FuncionarioRequestDTO request);
+        FuncionarioResponseDTO actualizarFuncionario(
+                        Long id,
+                        FuncionarioRequestDTO request);
 
-    void desactivarFuncionario(Long id);
+        void desactivarFuncionario(Long id);
 
-    FuncionarioResponseDTO cambiarRol(
-            Long id,
-            CambioRolDTO request);
+        void eliminarFuncionario(Long id);
+
+        void activarFuncionario(Long id);
+
+        FuncionarioResponseDTO cambiarRol(
+                        Long id,
+                        CambioRolDTO request);
 }

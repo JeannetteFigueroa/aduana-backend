@@ -34,7 +34,7 @@ public class AuthController {
         public AuthResponseDTO register(
                         @Valid @RequestBody RegisterRequestDTO request) {
 
-                return authService.register(request);
+                return authService.register(request); /* cambiar por httpstatus */
         }
 
         @PostMapping("/login")
@@ -86,6 +86,7 @@ public class AuthController {
                                 "Contraseña actualizada");
         }
 
+        /*      MIGRAN A OTRO MICROSERVICIO
         @GetMapping("/protected")
         public String protectedEndpoint() {
 
@@ -107,23 +108,28 @@ public class AuthController {
         }
 
         @GetMapping("/admin/test")
+        @PreAuthorize("hasRole('ADMIN')")
         public String adminTest() {
 
                 return "Acceso ADMIN correcto";
         }
 
         @GetMapping("/funcionario/test")
+        @PreAuthorize("hasAnyRole('ADMIN','FUNCIONARIO')")
         public String funcionarioTest() {
 
                 return "Acceso FUNCIONARIO correcto";
         }
 
         @GetMapping("/viajero/test")
+        @PreAuthorize("hasAnyRole('ADMIN','FUNCIONARIO','VIAJERO')")
         public String viajeroTest() {
 
                 return "Acceso VIAJERO correcto";
         }
-
+*/
+/* 
+        METODOS ADMINISTRATIVOS PARA MSUSUARIOS!!
         @GetMapping("/users")
         public List<UsuarioResponseDTO> getAllUsers() {
 
@@ -154,6 +160,6 @@ public class AuthController {
 
                 return ResponseEntity.ok("Usuario activado");
         }
-
+*/
         
 }
