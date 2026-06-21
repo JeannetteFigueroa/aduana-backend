@@ -2,7 +2,8 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
+# Forzamos a Maven a compilar solo código de producción ignorando test-compile
+RUN mvn clean package -DskipTests -Dmaven.test.skip=true -DcompilerArgument="-Xlint:none"
 
 # Paso 2: Crear el entorno de ejecución único usando Java 21
 FROM eclipse-temurin:21-jre-alpine
