@@ -1,14 +1,14 @@
 server:
-  port: ${PORT:8083}
+  port: 8083
 
 spring:
   application:
     name: ms-viajeros
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/db_viajeros?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    url: jdbc:mysql://localhost:3307/db_viajeros?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
 
   jpa:
     open-in-view: false
@@ -24,10 +24,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+      defaultZone: http://localhost:8761/eureka

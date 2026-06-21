@@ -1,5 +1,5 @@
 server:
-  port: ${PORT:8080}
+  port: 8080
 
 spring:
   application:
@@ -9,24 +9,24 @@ spring:
     gateway:
       routes:
         - id: ms-auth
-          uri: ${MS_AUTH_URL:http://localhost:8081}
+          uri: http://localhost:8081
           predicates:
             - Path=/api/auth/**
 
         - id: ms-usuarios
-          uri: ${MS_USUARIOS_URL:http://localhost:8082}
+          uri: http://localhost:8082
           predicates:
             - Path=/api/usuarios/**
 
         - id: ms-viajeros
-          uri: ${MS_VIAJEROS_URL:http://localhost:8083}
+          uri: http://localhost:8083
           predicates:
             - Path=/api/viajeros/**
 
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "${ALLOWED_ORIGINS:https://aduana-frontend-wheat.vercel.app,http://localhost:5173,http://localhost:3000}"
+            allowedOrigins: "https://aduana-frontend-wheat.vercel.app,http://localhost:5173,http://localhost:3000"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
@@ -34,4 +34,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+      defaultZone: http://localhost:8761/eureka

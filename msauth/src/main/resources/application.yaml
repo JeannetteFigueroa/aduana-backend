@@ -1,15 +1,14 @@
 server:
-  port: ${PORT:8081}
+  port: 8081
 
 spring:
   application:
     name: ms-auth
 
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/db_auth?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
-    driver-class-name: com.mysql.cj.jdbc.Driver 
+    url: jdbc:mysql://localhost:3307/db_auth?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password:
 
   jpa:
     open-in-view: false
@@ -25,7 +24,11 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+      defaultZone: http://localhost:8761/eureka
+
+jwt:
+  secret: miSecretKeyParaJwtQueDebeTenerAlMenos256BitsDeLongitud
+  expiration: 86400000
 
 management:
   endpoints:
