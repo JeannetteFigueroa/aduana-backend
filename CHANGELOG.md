@@ -13,6 +13,20 @@
 - **Feign Client**: `VehiculoClient` para consultar datos de vehículos desde msaduana
 - **Gateway**: Ruta `/api/validaciones/**` → mspdi agregada
 
+#### msviajeros (actualizado)
+- **Nuevos endpoints**:
+  - `GET /api/viajeros?estado=cola` - Lista viajeros en cola
+  - `GET /api/viajeros/estado/cola` - Viajeros esperando permiso
+  - `GET /api/viajeros/completo/{id}` - Viajero con datos completos
+  - `GET /api/viajeros/{id}/menores` - Menores del viajero
+  - `POST /api/viajeros/{id}/menores` - Agregar menor
+- **Nuevos DTOs**: `MenorRequestDTO`, `MenorResponseDTO`, `MenarResponseDTO`, `ViajeroCompletoDTO`
+- **Nueva entidad**: `Menor` con relación a `Viajero`
+
+#### msaduana (actualizado)
+- **Nuevos endpoints**:
+  - `GET /api/vehiculos/rut/{rutDuenio}` - Buscar vehículo por RUT dueño
+
 ### Frontend - Actualizaciones
 
 #### admin.validaciones.tsx

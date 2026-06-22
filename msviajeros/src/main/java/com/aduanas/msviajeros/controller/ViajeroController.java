@@ -1,6 +1,9 @@
 package com.aduanas.msviajeros.controller;
 
 import com.aduanas.msviajeros.dto.CambioRiesgoDTO;
+import com.aduanas.msviajeros.dto.MenorRequestDTO;
+import com.aduanas.msviajeros.dto.MenorResponseDTO;
+import com.aduanas.msviajeros.dto.ViajeroCompletoDTO;
 import com.aduanas.msviajeros.dto.ViajeroRequestDTO;
 import com.aduanas.msviajeros.dto.ViajeroResponseDTO;
 import com.aduanas.msviajeros.service.ViajeroService;
@@ -30,10 +33,24 @@ public class ViajeroController {
         }
 
         @GetMapping
-        public ResponseEntity<List<ViajeroResponseDTO>> obtenerTodos() {
+        public ResponseEntity<List<ViajeroResponseDTO>> obtenerTodos(
+                        @RequestParam(required = false) String estado) {
 
-                return ResponseEntity.ok(
-                                service.obtenerTodos());
+                if (estado != null) {
+                        return ResponseEntity.ok(service.obtenerPorEstado(estado));
+                }
+                return ResponseEntity.ok(service.obtenerTodos());
+        }
+
+        @GetMapping("/estado/cola")
+        public ResponseEntity<List<ViajeroResponseDTO>> obtenerEnCola() {
+                return ResponseEntity.ok(service.obtenerPorEstado("cola"));
+        }
+
+        @GetMapping("/completo/{id}")
+        public ResponseEntity<ViajeroCompletoDTO> obtenerCompleto(
+                        @PathVariable Long id) {
+                return ResponseEntity.ok(service.obtenerCompleto(id));
         }
 
         @GetMapping("/{id}")
@@ -50,6 +67,20 @@ public class ViajeroController {
 
                 return ResponseEntity.ok(
                                 service.obtenerPorRut(rut));
+        }
+
+        @GetMapping("/{id}/menores")
+        public ResponseEntity<List<MenorResponseDTO>> obtenerMenores(
+                        @PathVariable Long id) {
+                return ResponseEntity.ok(service.obtenerMenores(id));
+        }
+
+        @PostMapping("/{id}/menores")
+        public ResponseEntity<MenorResponseDTO> agregarMenor(
+                        @PathVariable Long id,
+                        @RequestBody MenorRequestDTO request) {
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                .body(service.agregarMenor(id, request));
         }
 
         @PutMapping("/{id}")

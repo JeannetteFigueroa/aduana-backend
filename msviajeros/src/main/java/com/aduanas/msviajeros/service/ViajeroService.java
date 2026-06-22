@@ -2,22 +2,33 @@ package com.aduanas.msviajeros.service;
 
 import java.util.List;
 import com.aduanas.msviajeros.dto.CambioRiesgoDTO;
+import com.aduanas.msviajeros.dto.MenorRequestDTO;
+import com.aduanas.msviajeros.dto.MenorResponseDTO;
+import com.aduanas.msviajeros.dto.ViajeroCompletoDTO;
 import com.aduanas.msviajeros.dto.ViajeroRequestDTO;
 import com.aduanas.msviajeros.dto.ViajeroResponseDTO;
 
 public interface ViajeroService {
 
-    ViajeroResponseDTO crearViajero(ViajeroRequestDTO request);
+        ViajeroResponseDTO crearViajero(ViajeroRequestDTO request);
 
-    List<ViajeroResponseDTO> obtenerTodos();
+        List<ViajeroResponseDTO> obtenerTodos();
 
-    ViajeroResponseDTO obtenerPorId(Long id);
+        List<ViajeroResponseDTO> obtenerPorEstado(String estado);
 
-    ViajeroResponseDTO obtenerPorRut(String rut);
+        ViajeroResponseDTO obtenerPorId(Long id);
 
-    ViajeroResponseDTO actualizarViajero(Long id, ViajeroRequestDTO request);
+        ViajeroCompletoDTO obtenerCompleto(Long id);
 
-    void eliminarViajero(Long id);
+        ViajeroResponseDTO obtenerPorRut(String rut);
 
-    ViajeroResponseDTO cambiarRiesgo(Long id, String riesgo);
+        List<MenorResponseDTO> obtenerMenores(Long viajeroId);
+
+        MenorResponseDTO agregarMenor(Long viajeroId, MenorRequestDTO request);
+
+        ViajeroResponseDTO actualizarViajero(Long id, ViajeroRequestDTO request);
+
+        void eliminarViajero(Long id);
+
+        ViajeroResponseDTO cambiarRiesgo(Long id, String riesgo);
 }

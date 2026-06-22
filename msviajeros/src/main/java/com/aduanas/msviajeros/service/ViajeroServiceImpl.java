@@ -5,11 +5,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.aduanas.msviajeros.dto.MenorRequestDTO;
+import com.aduanas.msviajeros.dto.MenorResponseDTO;
 import com.aduanas.msviajeros.dto.ViajeroRequestDTO;
 import com.aduanas.msviajeros.dto.ViajeroResponseDTO;
 import com.aduanas.msviajeros.exception.RutDuplicadoException;
 import com.aduanas.msviajeros.exception.ViajeroNoEncontradoException;
+import com.aduanas.msviajeros.model.Menor;
 import com.aduanas.msviajeros.model.Viajero;
+import com.aduanas.msviajeros.dto.ViajeroCompletoDTO;
+import com.aduanas.msviajeros.repository.MenorRepository;
 import com.aduanas.msviajeros.repository.ViajeroRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class ViajeroServiceImpl implements ViajeroService {
 
         private final ViajeroRepository repository;
+        private final MenorRepository menorRepository;
 
         @Override
         public ViajeroResponseDTO crearViajero(
@@ -54,8 +60,15 @@ public class ViajeroServiceImpl implements ViajeroService {
 
         @Override
         public List<ViajeroResponseDTO> obtenerTodos() {
-
                 return repository.findAll()
+                                .stream()
+                                .map(this::mapear)
+                                .toList();
+        }
+
+        @Override
+        public List<ViajeroResponseDTO> obtenerPorEstado(String estado) {
+                return repository.findByEstado(estado)
                                 .stream()
                                 .map(this::mapear)
                                 .toList();
@@ -73,6 +86,19 @@ public class ViajeroServiceImpl implements ViajeroService {
         }
 
         @Override
+        public ViajeroCompletoDTO obtenerCompleto(Long id) {
+                Viajero viajero = repository.findById(id)
+                                .orElseThrow(() -> new ViajeroNoEncontradoException("Viajero no encontrado"));
+
+                ViajeroCompletoDTO dto = new ViajeroCompletoDTO();
+                dto.setId(viajero.getId());
+                dto.setNombre(viajero.getNombres() + " " + viajero.getApellidos());
+                dto.setRut(viajero.getRut());
+
+                return dto;
+        }
+
+        @Override
         public ViajeroResponseDTO obtenerPorRut(
                         String rut) {
 
@@ -81,6 +107,41 @@ public class ViajeroServiceImpl implements ViajeroService {
                                                 "Viajero no encontrado"));
 
                 return mapear(viajero);
+        }
+
+        @Override
+        public List<MenorResponseDTO> obtenerMenores(Long viajeroId) {
+                Viajero viajero = repository.findById(viajeroId)
+                                .orElseThrow(() -> new ViajeroNoEncontradoException("Viajero no encontrado"));
+                return viajero.getMenores().stream()
+                                .map(this::mapMenor)
+                                .toList();
+        }
+
+        @Override
+        public MenorResponseDTO agregarMenor(Long viajeroId, MenorRequestDTO request) {
+                Viajero viajero = repository.findById(viajeroId)
+                                .orElseThrow(() -> new ViajeroNoEncontradoException("Viajero no encontrado"));
+
+                Menor menor = new Menor(
+                                request.getNombre(),
+                                request.getRut(),
+                                request.getFechaNacimiento(),
+                                request.getParentesco(),
+                                viajero);
+
+                menorRepository.save(menor);
+                return mapMenor(menor);
+        }
+
+        private MenorResponseDTO mapMenor(Menor m) {
+                return new MenorResponseDTO(
+                                m.getId(),
+                                m.getNombre(),
+                                m.getRut(),
+                                m.getFechaNacimiento(),
+                                m.getParentesco(),
+                                m.isAutorizado());
         }
 
         @Override

@@ -30,6 +30,11 @@ public class VehiculoController {
         return service.buscarPorPatente(patente);
     }
 
+    @GetMapping("/rut/{rutDuenio}")
+    public VehiculoResponseDTO buscarPorRut(@PathVariable String rutDuenio) {
+        return service.buscarPorRut(rutDuenio);
+    }
+
     @GetMapping
     public List<VehiculoResponseDTO> listar() {
         return service.listarVehiculos();

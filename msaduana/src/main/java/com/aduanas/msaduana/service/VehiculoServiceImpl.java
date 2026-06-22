@@ -45,6 +45,12 @@ public class VehiculoServiceImpl implements VehiculoService {
     }
 
     @Override
+    public VehiculoResponseDTO buscarPorRut(String rutDuenio) {
+        Vehiculo v = repository.findByRutDuenio(rutDuenio).orElseThrow(() -> new RuntimeException("Vehículo no encontrado"));
+        return VehiculoResponseDTO.from(v);
+    }
+
+    @Override
     public List<VehiculoResponseDTO> listarVehiculos() {
         return repository.findAll().stream().map(VehiculoResponseDTO::from).collect(Collectors.toList());
     }
