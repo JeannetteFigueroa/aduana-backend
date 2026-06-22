@@ -1,7 +1,5 @@
 package com.aduanas.msauth.security;
 
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
