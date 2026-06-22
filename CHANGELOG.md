@@ -49,6 +49,9 @@
 - Vista completa del viajero antes de emitir permiso
 - Muestra: datos, vehículo, declaración SAG, validaciones PDI, menores
 
+#### viajero.tsx
+- Agregado import `cn` faltante (arreglo error ReferenceError)
+
 #### validaciones.ts (nuevo)
 - Función `listarValidaciones(viajeroId)` para consumir API mspdi
 
