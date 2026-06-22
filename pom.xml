@@ -42,21 +42,13 @@
 
         <module>eureka</module>
 
-        <module>msalertas</module>
-
         <module>msauth</module>
-
-        <module>msdeclaraciones</module>
-
-        <module>mspermisos</module>
-
-        <module>msreportes</module>
 
         <module>msusuarios</module>
 
-        <module>msvalidaciones</module>
-
         <module>msviajeros</module>
+
+        <module>msaduana</module>
 
     </modules>
 

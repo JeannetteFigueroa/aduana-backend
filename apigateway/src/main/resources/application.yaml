@@ -23,6 +23,11 @@ spring:
           predicates:
             - Path=/api/viajeros/**
 
+        - id: ms-aduana
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/vehiculos/**
+
       globalcors:
         cors-configurations:
           '[/**]':
