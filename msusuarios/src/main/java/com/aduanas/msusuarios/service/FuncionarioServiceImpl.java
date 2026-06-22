@@ -28,7 +28,8 @@ public class FuncionarioServiceImpl implements FuncionarioService {
                         "ADMIN",
                         "SUPERVISOR",
                         "FISCALIZADOR",
-                        "OPERADOR");
+                        "OPERADOR",
+                        "FUNCIONARIO");
 
         // Método para crear funcionario
         @Override
