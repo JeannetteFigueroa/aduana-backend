@@ -88,7 +88,9 @@ public class AuthService {
                         String ip) {
 
                 Optional<Usuario> usuarioOpt = usuarioRepository
-                                .findByEmail(request.getEmail());
+                                .findByRutOrEmail(
+                                                request.getEmail(),
+                                                request.getEmail());
 
                 Usuario usuario = usuarioOpt.orElse(null);
 

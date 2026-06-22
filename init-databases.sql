@@ -55,14 +55,14 @@ CREATE TABLE IF NOT EXISTS auditoria_acceso (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 );
 
--- Usuario ADMIN inicial (contraseña: admin123)
+-- Usuario ADMIN inicial (contraseña: admin1234)
 INSERT IGNORE INTO usuarios (rut, nombres, apellidos, email, password, activo, rol_id)
 VALUES (
     '11.111.111-1',
     'Admin',
     'Sistema',
     'admin@aduana.cl',
-    '$2a$10$rJZ8QZ8QZ8QZ8QZ8QZ8QZ.O5QZ8QZ8QZ8QZ8QZ8QZ8QZ8QZ8QZ8Q',
+    '$2a$10$Ta6kkOJ/ManIdYMMugyX8uFTOXww7NritjpO31sCrCbnJTH1PSlqm',
     true,
     1
 );
@@ -362,7 +362,7 @@ VALUES (
     'Juan',
     'Pérez',
     'juan.perez@correo.cl',
-    '$2a$10$ABC123XYZ789ABC123XYZ7.O5QZ8QZ8QZ8QZ8QZ8QZ8QZ8QZ8QZ',
+    '$2a$10$X4jj3nV4wEzRpBqvgBUHMevpRy5Kq3l6DWlpTS6HcxC.xwSrGFv5G',
     true,
     3
 );
