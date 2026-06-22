@@ -28,6 +28,11 @@ spring:
           predicates:
             - Path=/api/vehiculos/**
 
+        - id: ms-pdi
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/validaciones/**
+
       globalcors:
         cors-configurations:
           '[/**]':

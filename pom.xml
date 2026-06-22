@@ -36,21 +36,23 @@
         </dependencies>
     </dependencyManagement>
 
-    <modules>
+<modules>
 
-        <module>apigateway</module>
+		<module>apigateway</module>
 
-        <module>eureka</module>
+		<module>eureka</module>
 
-        <module>msauth</module>
+		<module>msauth</module>
 
-        <module>msusuarios</module>
+		<module>msusuarios</module>
 
-        <module>msviajeros</module>
+		<module>msviajeros</module>
 
-        <module>msaduana</module>
+		<module>msaduana</module>
 
-    </modules>
+		<module>mspdi</module>
+
+	</modules>
 
 
 </project>
