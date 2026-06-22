@@ -26,7 +26,11 @@ spring:
       globalcors:
         cors-configurations:
           '[/**]':
-            allowedOrigins: "https://aduana-frontend-wheat.vercel.app,http://localhost:5173,http://localhost:3000"
+            allowedOrigins:
+              - "https://aduana-frontend-wheat.vercel.app"
+              - "https://literature-ran-classified-deemed.trycloudflare.com"
+              - "http://localhost:5173"
+              - "http://localhost:3000"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true

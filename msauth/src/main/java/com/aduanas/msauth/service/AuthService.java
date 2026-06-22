@@ -87,10 +87,9 @@ public class AuthService {
                         LoginRequestDTO request,
                         String ip) {
 
-                Optional<Usuario> usuarioOpt = usuarioRepository
-                                .findByRutOrEmail(
-                                                request.getEmail(),
-                                                request.getEmail());
+Optional<Usuario> usuarioOpt = usuarioRepository
+                                .findByIdentificador(
+                                        request.getEmail());
 
                 Usuario usuario = usuarioOpt.orElse(null);
 
