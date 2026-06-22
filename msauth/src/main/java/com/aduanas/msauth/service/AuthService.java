@@ -80,6 +80,7 @@ public class AuthService {
                                 .token(token)
                                 .email(usuario.getEmail())
                                 .rol(rol.getNombre())
+                                .rut(usuario.getRut())
                                 .build();
         }
 
@@ -122,6 +123,7 @@ Optional<Usuario> usuarioOpt = usuarioRepository
                                 .token(token)
                                 .email(usuario.getEmail())
                                 .rol(usuario.getRol().getNombre())
+                                .rut(usuario.getRut())
                                 .build();
         }
 

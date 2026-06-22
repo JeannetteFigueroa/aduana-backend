@@ -12,4 +12,6 @@ public class AuthResponseDTO {
     private String email;
 
     private String rol;
+
+    private String rut;
 }
