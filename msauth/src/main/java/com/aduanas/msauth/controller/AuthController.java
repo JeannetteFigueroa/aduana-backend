@@ -2,10 +2,13 @@ package com.aduanas.msauth.controller;
 
 import com.aduanas.msauth.dto.AuthResponseDTO;
 import com.aduanas.msauth.dto.ChangePasswordDTO;
+import com.aduanas.msauth.dto.InternalUserRequestDTO;
+import com.aduanas.msauth.dto.InternalUserResponseDTO;
 import com.aduanas.msauth.dto.LoginRequestDTO;
 import com.aduanas.msauth.dto.RegisterRequestDTO;
 import com.aduanas.msauth.dto.UserProfileDTO;
 import com.aduanas.msauth.service.AuthService;
+import com.aduanas.msauth.dto.InternalUserRequestDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,6 +41,14 @@ public class AuthController {
                 AuthResponseDTO response = authService.register(request, ip);
 
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+
+        @PostMapping("/internal/register")
+        public InternalUserResponseDTO registerInternal(
+                        @RequestBody InternalUserRequestDTO request) {
+
+                return authService.registerInternal(request);
+
         }
 
         @PostMapping("/login")

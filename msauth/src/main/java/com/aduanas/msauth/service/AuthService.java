@@ -13,6 +13,8 @@ import com.aduanas.msauth.repository.AuditoriaRepository;
 import com.aduanas.msauth.repository.RolRepository;
 import com.aduanas.msauth.repository.UsuarioRepository;
 import com.aduanas.msauth.security.JwtService;
+import com.aduanas.msauth.dto.InternalUserRequestDTO;
+import com.aduanas.msauth.dto.InternalUserResponseDTO;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -84,13 +86,61 @@ public class AuthService {
                                 .build();
         }
 
+        public InternalUserResponseDTO registerInternal(
+                        InternalUserRequestDTO request) {
+
+                if (usuarioRepository.existsByEmail(request.getEmail())) {
+
+                        throw new RuntimeException(
+                                        "Email ya registrado");
+                }
+
+                if (usuarioRepository.existsByRut(request.getRut())) {
+
+                        throw new RuntimeException(
+                                        "Rut ya registrado");
+                }
+
+                Rol rol = rolRepository
+                                .findByNombre(request.getRol())
+                                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+                String passwordTemporal = "Temp@2026";
+
+                Usuario usuario = Usuario.builder()
+                                .rut(request.getRut())
+                                .nombres(request.getNombres())
+                                .apellidos(request.getApellidos())
+                                .email(request.getEmail())
+                                .password(passwordEncoder.encode(passwordTemporal))
+                                .activo(true)
+                                .rol(rol)
+                                .build();
+
+                usuarioRepository.save(usuario);
+
+                registrarAuditoria(
+                                usuario,
+                                "CREATE_USER",
+                                "EXITOSO",
+                                "MICROSERVICE");
+
+                return InternalUserResponseDTO.builder()
+                                .id(usuario.getId())
+                                .email(usuario.getEmail())
+                                .rol(usuario.getRol().getNombre())
+                                .passwordTemporal(passwordTemporal)
+                                .mensaje("Usuario creado correctamente")
+                                .build();
+        }
+
         public AuthResponseDTO login(
                         LoginRequestDTO request,
                         String ip) {
 
-Optional<Usuario> usuarioOpt = usuarioRepository
+                Optional<Usuario> usuarioOpt = usuarioRepository
                                 .findByIdentificador(
-                                        request.getEmail());
+                                                request.getEmail());
 
                 Usuario usuario = usuarioOpt.orElse(null);
 
@@ -197,4 +247,5 @@ Optional<Usuario> usuarioOpt = usuarioRepository
                 auditoriaRepository.save(auditoria);
 
         }
+
 }

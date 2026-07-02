@@ -5,9 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.aduanas.msusuarios.dto.CambioRolDTO;
-import com.aduanas.msusuarios.dto.FuncionarioRequestDTO;
-import com.aduanas.msusuarios.dto.FuncionarioResponseDTO;
+import com.aduanas.msusuarios.client.AuthClient;
+import com.aduanas.msusuarios.dto.*;
 import com.aduanas.msusuarios.exception.CorreoDuplicadoException;
 import com.aduanas.msusuarios.exception.CorreoInstitucionalException;
 import com.aduanas.msusuarios.exception.FuncionarioNoEncontradoException;
@@ -16,6 +15,10 @@ import com.aduanas.msusuarios.exception.RutDuplicadoException;
 import com.aduanas.msusuarios.model.Funcionario;
 import com.aduanas.msusuarios.repository.FuncionarioRepository;
 
+import org.springframework.transaction.annotation.Transactional;
+
+import com.aduanas.msusuarios.client.AuthClient;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class FuncionarioServiceImpl implements FuncionarioService {
 
         private final FuncionarioRepository repository;
+        private final AuthClient authClient;
 
         private final List<String> ROLES = List.of(
                         "ADMIN",
@@ -32,6 +36,7 @@ public class FuncionarioServiceImpl implements FuncionarioService {
                         "FUNCIONARIO");
 
         // Método para crear funcionario
+        @Transactional
         @Override
         public FuncionarioResponseDTO crearFuncionario(
                         FuncionarioRequestDTO request) {
@@ -77,6 +82,17 @@ public class FuncionarioServiceImpl implements FuncionarioService {
                                 .build();
 
                 repository.save(funcionario);
+
+                InternalUserRequestDTO usuario = InternalUserRequestDTO.builder()
+                                .rut(funcionario.getRut())
+                                .nombres(funcionario.getNombres())
+                                .apellidos(funcionario.getApellidos())
+                                .email(funcionario.getCorreoInstitucional())
+                                .password("Temporal123*")
+                                .rol(funcionario.getRol())
+                                .build();
+
+                authClient.crearUsuario(usuario);
 
                 return mapear(funcionario);
         }

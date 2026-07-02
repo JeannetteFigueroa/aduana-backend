@@ -33,18 +33,19 @@ public class SecurityConfig {
                                 .csrf(csrf -> csrf.disable())
 
                                 .sessionManagement(session -> session.sessionCreationPolicy(
-                                        SessionCreationPolicy.STATELESS))
+                                                SessionCreationPolicy.STATELESS))
 
                                 .authorizeHttpRequests(auth -> auth
 
-                                        .requestMatchers(
-                                        "/api/auth/login",
-                                        "/api/auth/register",
-                                        "/actuator/**")
-                                        .permitAll()
+                                                .requestMatchers(
+                                                                "/api/auth/login",
+                                                                "/api/auth/register",
+                                                                "/api/auth/internal/register",
+                                                                "/actuator/**")
+                                                .permitAll()
 
-                                        .anyRequest()
-                                        .authenticated());
+                                                .anyRequest()
+                                                .authenticated());
 
                 http.addFilterBefore(
                                 jwtAuthenticationFilter,
